@@ -38,6 +38,7 @@ public class HotelUI extends UI {
         hotelGrid.addColumn("category");
         hotelGrid.addColumn(hotel -> new Link(hotel.getUrl(), new ExternalResource(hotel.getUrl())), new ComponentRenderer()).setCaption("Url");
 //        hotelGrid.setColumnOrder("name", "address", "rating", "category", "url");
+        LOGGER.info("init method");
 
     }
 
@@ -55,6 +56,7 @@ public class HotelUI extends UI {
         content.setWidth(100, Unit.PERCENTAGE);
         layout.setWidth(100, Unit.PERCENTAGE);
         hotelGrid.setWidth(100, Unit.PERCENTAGE);
+        LOGGER.info("initUI method");
     }
 
     private void initListeners() {
@@ -65,6 +67,7 @@ public class HotelUI extends UI {
             deleteHotel.setEnabled(false);
             editHotel.setEnabled(false);
             editForm.setVisible(false);
+            LOGGER.info("deleted hotel " + hotel);
         });
         addHotel.addClickListener(e -> editForm.setHotel(new Hotel()));
         nameFilter.addValueChangeListener(e -> updateList());
@@ -76,13 +79,20 @@ public class HotelUI extends UI {
 //                editForm.setHotel(e.getValue());
             }
         });
-        editHotel.addClickListener(e -> editForm.setHotel(hotelGrid.getSelectedItems().iterator().next()));
+        editHotel.addClickListener(e -> {
+            try {
+                editForm.setHotel(hotelGrid.getSelectedItems().iterator().next().clone());
+            } catch (CloneNotSupportedException e1) {
+                LOGGER.warning("something went wrong " + e);
+            }
+        });
     }
 
     public void updateList() {
         deleteHotel.setEnabled(false);
         editHotel.setEnabled(false);
         hotelGrid.setItems(service.findAll(nameFilter.getValue(), addressFilter.getValue()));
+        LOGGER.info("updateList method");
     }
 
     @WebServlet(urlPatterns = "/*", name = "HotelUIServlet", asyncSupported = true)
