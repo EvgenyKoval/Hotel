@@ -107,7 +107,7 @@ public class HotelService {
             return;
         }
         if (entry.getId() == null) {
-            entry.setId(nextId++);
+            entry.setId(++nextId);
         }
         try {
             entry = entry.clone();

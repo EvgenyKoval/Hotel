@@ -2,7 +2,6 @@ package com.gp.vaadincourse;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
-import com.vaadin.data.ValueProvider;
 import com.vaadin.external.org.slf4j.Logger;
 import com.vaadin.external.org.slf4j.LoggerFactory;
 import com.vaadin.server.ExternalResource;
@@ -10,8 +9,6 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.*;
 import com.vaadin.ui.renderers.ComponentRenderer;
-import com.vaadin.ui.renderers.Renderer;
-import sun.security.provider.VerificationProvider;
 
 import javax.servlet.annotation.WebServlet;
 
@@ -37,17 +34,12 @@ public class HotelUI extends UI {
         initUI();
         initListeners();
         hotelGrid.setItems(service.findAll());
-        hotelGrid.removeAllColumns();
-        hotelGrid.addColumn("name");
-        hotelGrid.addColumn("address");
-        hotelGrid.addColumn("rating");
-        hotelGrid.addColumn("category");
-        hotelGrid.addColumn(hotel -> {
-            Link link = new Link(hotel.getUrl(), new ExternalResource(hotel.getUrl()));
+        hotelGrid.getColumn("url").setRenderer(hotel -> {
+            Link link = new Link((String) hotel, new ExternalResource(String.valueOf(hotel)));
             link.setTargetName("_blank");
             return link;
-        }, new ComponentRenderer()).setCaption("Url");
-//        hotelGrid.setColumnOrder("name", "address", "rating", "category", "url");
+        }, new ComponentRenderer());
+        hotelGrid.setColumnOrder("name", "address", "rating", "category", "url");
     }
 
     private void initUI() {
