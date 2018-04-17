@@ -2,19 +2,24 @@ package com.gp.vaadincourse;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
+import com.vaadin.data.ValueProvider;
+import com.vaadin.external.org.slf4j.Logger;
+import com.vaadin.external.org.slf4j.LoggerFactory;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.*;
 import com.vaadin.ui.renderers.ComponentRenderer;
+import com.vaadin.ui.renderers.Renderer;
+import sun.security.provider.VerificationProvider;
 
 import javax.servlet.annotation.WebServlet;
-import java.util.logging.Logger;
 
 @Theme("mytheme")
 public class HotelUI extends UI {
-    private static final Logger LOGGER = Logger.getLogger(HotelUI.class.getName());
-    private HotelService service = HotelService.getInstance();
+    private final static Logger LOGGER = LoggerFactory.getLogger(HotelUI.class);
+    //    private static final Logger LOGGER = Logger.getLogger(HotelUI.class.getName());
+    private static final HotelService service = HotelService.getInstance();
     private final VerticalLayout content = new VerticalLayout();
     private final HorizontalLayout controls = new HorizontalLayout();
     private final TextField nameFilter = new TextField();
@@ -23,11 +28,12 @@ public class HotelUI extends UI {
     private final Button deleteHotel = new Button("Delete hotel");
     private final Button editHotel = new Button("Edit hotel");
     private final Grid<Hotel> hotelGrid = new Grid<>(Hotel.class);
-    private HotelEditForm editForm = new HotelEditForm(this);
+    private final HotelEditForm editForm = new HotelEditForm(this);
 
 
     @Override
     protected void init(VaadinRequest vaadinRequest) {
+        LOGGER.info("init method");
         initUI();
         initListeners();
         hotelGrid.setItems(service.findAll());
@@ -36,13 +42,16 @@ public class HotelUI extends UI {
         hotelGrid.addColumn("address");
         hotelGrid.addColumn("rating");
         hotelGrid.addColumn("category");
-        hotelGrid.addColumn(hotel -> new Link(hotel.getUrl(), new ExternalResource(hotel.getUrl())), new ComponentRenderer()).setCaption("Url");
+        hotelGrid.addColumn(hotel -> {
+            Link link = new Link(hotel.getUrl(), new ExternalResource(hotel.getUrl()));
+            link.setTargetName("_blank");
+            return link;
+        }, new ComponentRenderer()).setCaption("Url");
 //        hotelGrid.setColumnOrder("name", "address", "rating", "category", "url");
-        LOGGER.info("init method");
-
     }
 
     private void initUI() {
+        LOGGER.info("initUI method");
 //        hotelGrid.setSizeFull();
         controls.addComponents(nameFilter, addressFilter, addHotel, deleteHotel, editHotel);
         HorizontalLayout layout = new HorizontalLayout(hotelGrid, editForm);
@@ -56,7 +65,7 @@ public class HotelUI extends UI {
         content.setWidth(100, Unit.PERCENTAGE);
         layout.setWidth(100, Unit.PERCENTAGE);
         hotelGrid.setWidth(100, Unit.PERCENTAGE);
-        LOGGER.info("initUI method");
+
     }
 
     private void initListeners() {
@@ -64,8 +73,6 @@ public class HotelUI extends UI {
             Hotel hotel = hotelGrid.getSelectedItems().iterator().next();
             service.delete(hotel);
             updateList();
-            deleteHotel.setEnabled(false);
-            editHotel.setEnabled(false);
             editForm.setVisible(false);
             LOGGER.info("deleted hotel " + hotel);
         });
@@ -73,26 +80,24 @@ public class HotelUI extends UI {
         nameFilter.addValueChangeListener(e -> updateList());
         addressFilter.addValueChangeListener(e -> updateList());
         hotelGrid.asSingleSelect().addValueChangeListener(e -> {
-            if (e.getValue() != null) {
-                deleteHotel.setEnabled(true);
-                editHotel.setEnabled(true);
-//                editForm.setHotel(e.getValue());
-            }
+            boolean isSelected = e.getValue() != null;
+            deleteHotel.setEnabled(isSelected);
+            editHotel.setEnabled(isSelected);
         });
         editHotel.addClickListener(e -> {
             try {
                 editForm.setHotel(hotelGrid.getSelectedItems().iterator().next().clone());
             } catch (CloneNotSupportedException e1) {
-                LOGGER.warning("something went wrong " + e);
+                LOGGER.warn("something went wrong " + e);
             }
         });
     }
 
     public void updateList() {
+        LOGGER.info("updateList method");
         deleteHotel.setEnabled(false);
         editHotel.setEnabled(false);
         hotelGrid.setItems(service.findAll(nameFilter.getValue(), addressFilter.getValue()));
-        LOGGER.info("updateList method");
     }
 
     @WebServlet(urlPatterns = "/*", name = "HotelUIServlet", asyncSupported = true)

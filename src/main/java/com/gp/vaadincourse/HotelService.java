@@ -1,24 +1,18 @@
 package com.gp.vaadincourse;
 
-import com.vaadin.server.ExternalResource;
-import com.vaadin.ui.Link;
+
+import com.vaadin.external.org.slf4j.Logger;
+import com.vaadin.external.org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.*;
 
 public class HotelService {
 
-    private static HotelService instance;
-    private static final Logger LOGGER = Logger.getLogger(HotelService.class.getName());
+    private static HotelService instance = getInstance();
+    private static final Logger LOGGER = LoggerFactory.getLogger(HotelService.class);
 
-    private final HashMap<Long, Hotel> hotels = new HashMap<>();
+    private final Map<Long, Hotel> hotels = new HashMap<>();
     private long nextId = 0;
 
     private HotelService() {
@@ -37,65 +31,60 @@ public class HotelService {
     }
 
     public synchronized List<Hotel> findAll(String stringFilter) {
-        ArrayList<Hotel> arrayList = new ArrayList<>();
-        filterHotels(stringFilter, arrayList);
+        ArrayList<Hotel> result;
+        if (stringFilter == null || stringFilter.isEmpty()) {
+            result = new ArrayList<>(this.hotels.values());
 
-        arrayList.sort((o1, o2) -> (int) (o2.getId() - o1.getId()));
-        return arrayList;
+        }else {
+            result = new ArrayList<>();
+            filterHotels(stringFilter, result);
+        }sortHotels(result);
+        return result;
     }
 
     public synchronized List<Hotel> findAll(String stringFilter, int start, int maxResults) {
-        ArrayList<Hotel> arrayList = new ArrayList<>();
-        filterHotels(stringFilter, arrayList);
-        arrayList.sort((o1, o2) -> (int) (o2.getId() - o1.getId()));
+        ArrayList<Hotel> hotels = new ArrayList<>();
+        filterHotels(stringFilter, hotels);
+        sortHotels(hotels);
         int end = start + maxResults;
-        if (end > arrayList.size()) {
-            end = arrayList.size();
+        if (end > hotels.size()) {
+            end = hotels.size();
         }
-        return arrayList.subList(start, end);
+        return hotels.subList(start, end);
     }
 
     public synchronized List<Hotel> findAll(String name, String address) {
         List<Hotel> hotels = new ArrayList<>(instance.hotels.values());
-        hotels = filterByName(name, hotels);
-        return filterByAddress(address, hotels);
-    }
-
-    private List<Hotel> filterByName(String name, List<Hotel> hotels) {
-        if (name == null || name.isEmpty()) {
-            return hotels;
-        }
         List<Hotel> result = new ArrayList<>();
         for (Hotel hotel : hotels) {
-            if (hotel.getName().toLowerCase().contains(name.toLowerCase())) {
+            if (match(hotel.getName(), name) && match(hotel.getAddress(), address)) {
                 result.add(hotel);
             }
         }
+        sortHotels(result);
         return result;
     }
 
-    private List<Hotel> filterByAddress(String address, List<Hotel> hotels) {
-        if (address == null || address.isEmpty()) {
-            return hotels;
+    private boolean match(String checkingStr, String matchingStr) {
+        if (matchingStr == null || matchingStr.isEmpty()) {
+            return true;
         }
-        List<Hotel> result = new ArrayList<>();
-        for (Hotel hotel : hotels) {
-            if (hotel.getAddress().toLowerCase().contains(address.toLowerCase())) {
-                result.add(hotel);
-            }
-        }
-        return result;
+        return checkingStr.toLowerCase().contains(matchingStr.toLowerCase());
     }
+
+    private void sortHotels(List<Hotel> hotels) {
+        hotels.sort((o1, o2) -> (int) (o1.getId() - o2.getId()));
+    }
+
     private void filterHotels(String stringFilter, ArrayList<Hotel> arrayList) {
         for (Hotel contact : hotels.values()) {
             try {
-                boolean passesFilter = (stringFilter == null || stringFilter.isEmpty())
-                        || contact.toString().toLowerCase().contains(stringFilter.toLowerCase());
+                boolean passesFilter =  contact.toString().toLowerCase().contains(stringFilter.toLowerCase());
                 if (passesFilter) {
                     arrayList.add(contact.clone());
                 }
             } catch (CloneNotSupportedException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
+                LOGGER.error(null, ex);
             }
         }
     }
@@ -108,9 +97,13 @@ public class HotelService {
         hotels.remove(value.getId());
     }
 
+    public synchronized void deleteAll() {
+        hotels.clear();
+    }
+
     public synchronized void save(Hotel entry) {
         if (entry == null) {
-            LOGGER.log(Level.SEVERE, "Hotel is null.");
+            LOGGER.error("Hotel is null.");
             return;
         }
         if (entry.getId() == null) {

@@ -9,25 +9,31 @@ public class HotelEditForm extends FormLayout {
     private Hotel hotel;
     private Binder<Hotel> binder = new Binder<>(Hotel.class);
 
-    final TextField name = new TextField("Name");
-    final TextField address = new TextField("Address");
-    final TextField rating = new TextField("Rating");
-    final DateField operatesFrom = new DateField("Date");
-    final NativeSelect<HotelCategory> category = new NativeSelect<>();
-    final TextField url = new TextField("Url");
-    final TextArea description = new TextArea("Description");
+    private final TextField name = new TextField("Name");
+    private final TextField address = new TextField("Address");
+    private final TextField rating = new TextField("Rating");
+    private final DateField operatesFrom = new DateField("Date");
+    private final NativeSelect<HotelCategory> category = new NativeSelect<>();
+    private final TextField url = new TextField("Url");
+    private final TextArea description = new TextArea("Description");
 
-    final Button saveHotel = new Button("Save");
-    final Button close = new Button("Close");
+    private final Button saveHotel = new Button("Save");
+    private final Button close = new Button("Close");
 
     public HotelEditForm(HotelUI ui) {
         this.ui = ui;
-        HorizontalLayout controls = new HorizontalLayout();
-        controls.addComponents(saveHotel, close);
+        binder.bindInstanceFields(this);
+        initUI();
+        initListeners();
+    }
+
+    private void initUI() {
+        HorizontalLayout controls = new HorizontalLayout(saveHotel, close);
         addComponents(name, address, rating, operatesFrom, category, url, description, controls);
         category.setItems(HotelCategory.values());
-        setVisible(true);
-        binder.bindInstanceFields(this);
+    }
+
+    private void initListeners() {
         saveHotel.addClickListener(e -> save());
         close.addClickListener(e -> close());
     }

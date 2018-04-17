@@ -1,7 +1,5 @@
 package com.gp.vaadincourse;
 
-import com.vaadin.ui.Link;
-
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
