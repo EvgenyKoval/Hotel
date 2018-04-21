@@ -1,4 +1,4 @@
-package com.gp.vaadincourse;
+package com.gp.vaadincourse.entities;
 
 public enum HotelCategory {
     Hotel, Hostel, GuestHouse, Appartments

@@ -1,5 +1,7 @@
 package com.gp.vaadincourse;
 
+import com.gp.vaadincourse.entities.Hotel;
+import com.gp.vaadincourse.services.HotelService;
 import org.junit.Before;
 import org.junit.Test;
 

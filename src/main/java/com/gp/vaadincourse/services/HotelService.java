@@ -1,6 +1,8 @@
-package com.gp.vaadincourse;
+package com.gp.vaadincourse.services;
 
 
+import com.gp.vaadincourse.entities.Hotel;
+import com.gp.vaadincourse.entities.HotelCategoryItem;
 import com.vaadin.external.org.slf4j.Logger;
 import com.vaadin.external.org.slf4j.LoggerFactory;
 
@@ -35,10 +37,11 @@ public class HotelService {
         if (stringFilter == null || stringFilter.isEmpty()) {
             result = new ArrayList<>(this.hotels.values());
 
-        }else {
+        } else {
             result = new ArrayList<>();
             filterHotels(stringFilter, result);
-        }sortHotels(result);
+        }
+        sortHotels(result);
         return result;
     }
 
@@ -79,7 +82,7 @@ public class HotelService {
     private void filterHotels(String stringFilter, ArrayList<Hotel> arrayList) {
         for (Hotel contact : hotels.values()) {
             try {
-                boolean passesFilter =  contact.toString().toLowerCase().contains(stringFilter.toLowerCase());
+                boolean passesFilter = contact.toString().toLowerCase().contains(stringFilter.toLowerCase());
                 if (passesFilter) {
                     arrayList.add(contact.clone());
                 }
@@ -146,16 +149,22 @@ public class HotelService {
 
             Random r = new Random(0);
             Hotel h;
+            CategoryService service = CategoryService.getInstance();
+            Set<HotelCategoryItem> categories = service.findAll();
+            Iterator<HotelCategoryItem> iterator = categories.iterator();
             for (String hotel : hotelData) {
+                if (!iterator.hasNext()) {
+                    iterator = categories.iterator();
+                }
                 String[] split = hotel.split(";");
                 h = new Hotel();
                 h.setName(split[0]);
-                h.setRating(split[1]);
+                h.setRating(Integer.valueOf(split[1]));
                 h.setUrl(split[2]);
                 h.setAddress(split[3]);
-                h.setCategory(HotelCategory.values()[r.nextInt(HotelCategory.values().length)]);
+                h.setCategory(iterator.next());
                 int daysOld = 0 - r.nextInt(365 * 30);
-                h.setOperatesFrom((LocalDate.now().plusDays(daysOld)));
+                h.setOperatesFrom((LocalDate.now().plusDays(daysOld).toEpochDay()));
                 save(h);
             }
         }

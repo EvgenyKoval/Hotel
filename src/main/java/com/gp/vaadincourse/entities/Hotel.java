@@ -1,28 +1,27 @@
-package com.gp.vaadincourse;
+package com.gp.vaadincourse.entities;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.Objects;
 
 public class Hotel implements Serializable, Cloneable {
     private Long id;
-    private String name;
-    private String address;
-    private String rating;
-    private LocalDate operatesFrom;
-    private HotelCategory category;
-    private String url;
-    private String description;
+    private String name = "";
+    private String address = "";
+    private Integer rating = 0;
+    private Long operatesFrom = 0L;  //days from epoch day
+    private HotelCategoryItem category;
+    private String url = "";
+    private String description = "";
+
+    public Hotel() {
+    }
 
     public boolean isPersisted() {
         return id != null;
     }
 
-    public Hotel() {
-    }
-
     @Override
-    protected Hotel clone() throws CloneNotSupportedException {
+    public Hotel clone() throws CloneNotSupportedException {
         return (Hotel) super.clone();
     }
 
@@ -50,27 +49,27 @@ public class Hotel implements Serializable, Cloneable {
         this.address = address;
     }
 
-    public String getRating() {
+    public Integer getRating() {
         return rating;
     }
 
-    public void setRating(String rating) {
+    public void setRating(Integer rating) {
         this.rating = rating;
     }
 
-    public LocalDate getOperatesFrom() {
+    public Long getOperatesFrom() {
         return operatesFrom;
     }
 
-    public void setOperatesFrom(LocalDate operatesFrom) {
+    public void setOperatesFrom(Long operatesFrom) {
         this.operatesFrom = operatesFrom;
     }
 
-    public HotelCategory getCategory() {
+    public HotelCategoryItem getCategory() {
         return category;
     }
 
-    public void setCategory(HotelCategory category) {
+    public void setCategory(HotelCategoryItem category) {
         this.category = category;
     }
 
@@ -95,19 +94,19 @@ public class Hotel implements Serializable, Cloneable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Hotel hotel = (Hotel) o;
-        return Objects.equals(id, hotel.id) &&
+        return
                 Objects.equals(name, hotel.name) &&
-                Objects.equals(address, hotel.address) &&
-                Objects.equals(rating, hotel.rating) &&
-                Objects.equals(operatesFrom, hotel.operatesFrom) &&
-                category == hotel.category &&
-                Objects.equals(url, hotel.url);
+                        Objects.equals(address, hotel.address) &&
+                        Objects.equals(rating, hotel.rating) &&
+                        Objects.equals(operatesFrom, hotel.operatesFrom) &&
+                        category == hotel.category &&
+                        Objects.equals(url, hotel.url) &&
+                        Objects.equals(description, hotel.description);
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(id, name, address, rating, operatesFrom, category, url);
+        return Objects.hash(name, address, rating, operatesFrom, category, url, description);
     }
 
     @Override
@@ -116,10 +115,11 @@ public class Hotel implements Serializable, Cloneable {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", address='" + address + '\'' +
-                ", rating='" + rating + '\'' +
+                ", rating=" + rating +
                 ", operatesFrom=" + operatesFrom +
                 ", category=" + category +
                 ", url='" + url + '\'' +
+                ", description='" + description + '\'' +
                 '}';
     }
 }
