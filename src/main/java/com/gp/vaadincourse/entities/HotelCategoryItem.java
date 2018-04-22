@@ -5,12 +5,6 @@ import java.util.Objects;
 
 public class HotelCategoryItem implements Serializable, Cloneable {
 
-    public static void main(String[] args) {
-        System.out.println(new HotelCategoryItem("aa").hashCode());
-        System.out.println(new HotelCategoryItem("aa").hashCode());
-        System.out.println(new HotelCategoryItem("aa").hashCode());
-
-    }
     private String name;
 
     public HotelCategoryItem() {

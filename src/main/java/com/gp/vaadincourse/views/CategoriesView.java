@@ -35,6 +35,9 @@ public class CategoriesView extends VerticalLayout implements View {
         HorizontalLayout controls = new HorizontalLayout(addCategory, deleteCategory, editCategory);
         HorizontalLayout content = new HorizontalLayout(categoryGrid, categoryEditForm);
         addComponents(new MainMenu(), controls, content);
+        addCategory.setDescription("Add a new category");
+        deleteCategory.setDescription("Delete selected category(es)");
+        editCategory.setDescription("Edit selected category");
     }
 
     private void initListeners() {

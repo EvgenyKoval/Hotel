@@ -9,6 +9,7 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.external.org.slf4j.Logger;
 import com.vaadin.external.org.slf4j.LoggerFactory;
 import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.renderers.ComponentRenderer;
@@ -50,13 +51,13 @@ public class HotelsView extends VerticalLayout implements View {
         }, new ComponentRenderer());
         hotelGrid.getColumn("category").setRenderer(item -> {
             HotelCategoryItem categoryItem = (HotelCategoryItem) item;
-            if (categoryItem == null || categoryItem.getName() == null) return "No cat";
+            if (categoryItem == null || categoryItem.getName() == null) return "No category";
             return categoryItem.getName();
         }, new TextRenderer());
         hotelGrid.getColumn("operatesFrom").setRenderer(o -> {
             Long time = (Long) o;
             return LocalDate.ofEpochDay(time).toString();
-        },new TextRenderer());
+        }, new TextRenderer());
         hotelGrid.setColumnOrder("name", "address", "rating", "category", "url");
         updateList();
     }
@@ -79,6 +80,9 @@ public class HotelsView extends VerticalLayout implements View {
         hotelGrid.setWidth(100, Unit.PERCENTAGE);
         nameFilter.setPlaceholder("Filter by name");
         addressFilter.setPlaceholder("Filter by address");
+        addHotel.setDescription("Add a new hotel");
+        deleteHotel.setDescription("Delete selected hotel(s)");
+        editHotel.setDescription("Edit selected hotel");
 
     }
 
@@ -113,8 +117,9 @@ public class HotelsView extends VerticalLayout implements View {
         hotelGrid.setItems(SERVICE.findAll(nameFilter.getValue(), addressFilter.getValue()));
     }
 
-//    @WebServlet(urlPatterns = "/*", name = "HotelUIServlet", asyncSupported = true)
-//    @VaadinServletConfiguration(ui = HotelsView.class, productionMode = false)
-//    public static class HotelUIServlet extends VaadinServlet {
-//    }
+    @Override
+    public void enter(ViewChangeListener.ViewChangeEvent event) {
+        updateList();
+    }
+
 }

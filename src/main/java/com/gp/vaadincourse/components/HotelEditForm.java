@@ -14,6 +14,7 @@ import com.vaadin.external.org.slf4j.LoggerFactory;
 import com.vaadin.ui.*;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 import static com.vaadin.ui.Notification.Type.ERROR_MESSAGE;
 
@@ -76,7 +77,14 @@ public class HotelEditForm extends FormLayout {
         //todo Ко всем полям на форме добавить ToolTip с описанием значения поля.
         HorizontalLayout controls = new HorizontalLayout(saveHotel, close);
         addComponents(name, address, rating, operatesFrom, category, url, description, controls);
-        category.setItems(categoryService.findAll());
+        name.setDescription("Enter hotel name");
+        address.setDescription("Enter hotel address");
+        rating.setDescription("Enter hotel rating from 0 to 5");
+        category.setDescription("Choose hotel category");
+        url.setDescription("Enter hotel url");
+        description.setDescription("Enter hotel description");
+        saveHotel.setDescription("Save hotel");
+        close.setDescription("Close edit form");
     }
 
     private void initListeners() {
@@ -112,7 +120,18 @@ public class HotelEditForm extends FormLayout {
     public void setHotel(Hotel hotel) {
         this.hotel = hotel;
         binder.readBean(this.hotel);
+        initCategoriesItems();
         setVisible(true);
+    }
+
+    private void initCategoriesItems() {
+        Set<HotelCategoryItem> categoryItems = categoryService.findAll();
+        if (categoryItems == null || categoryItems.isEmpty()) {
+            category.setItems(new HotelCategoryItem("No category"));
+
+        }else {
+            category.setItems(categoryItems);
+        }
     }
 
 }

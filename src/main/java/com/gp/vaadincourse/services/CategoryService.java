@@ -55,8 +55,8 @@ public class CategoryService {
     }
 
     public synchronized void delete(HotelCategoryItem item) {
-        item.setName(null);
         categories.remove(item);
+        item.setName(null);
     }
 
     public synchronized int count() {

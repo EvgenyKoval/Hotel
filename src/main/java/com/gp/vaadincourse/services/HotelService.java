@@ -32,6 +32,17 @@ public class HotelService {
         return findAll(null);
     }
 
+    public synchronized List<Hotel> findAllByCategory(HotelCategoryItem category) {
+        Collection<Hotel> values = hotels.values();
+        ArrayList<Hotel> result = new ArrayList<>();
+        for (Hotel hotel : values) {
+            if (hotel.getCategory() != null && hotel.getCategory().equals(category)) {
+                result.add(hotel);
+            }
+        }
+        return result;
+    }
+
     public synchronized List<Hotel> findAll(String stringFilter) {
         ArrayList<Hotel> result;
         if (stringFilter == null || stringFilter.isEmpty()) {
