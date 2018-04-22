@@ -74,7 +74,6 @@ public class HotelEditForm extends FormLayout {
     }
 
     private void initUI() {
-        //todo Ко всем полям на форме добавить ToolTip с описанием значения поля.
         HorizontalLayout controls = new HorizontalLayout(saveHotel, close);
         addComponents(name, address, rating, operatesFrom, category, url, description, controls);
         name.setDescription("Enter hotel name");

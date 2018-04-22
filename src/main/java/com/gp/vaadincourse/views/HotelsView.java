@@ -22,8 +22,7 @@ import java.util.Set;
 public class HotelsView extends VerticalLayout implements View {
     private final static Logger LOGGER = LoggerFactory.getLogger(HotelsView.class);
     private static final HotelService SERVICE = HotelService.getInstance();
-    private final VerticalLayout content = new VerticalLayout();
-    private final HorizontalLayout controls = new HorizontalLayout();
+
     private final TextField nameFilter = new TextField();
     private final TextField addressFilter = new TextField();
     private final Button addHotel = new Button("Add hotel");
@@ -31,8 +30,6 @@ public class HotelsView extends VerticalLayout implements View {
     private final Button editHotel = new Button("Edit hotel");
     private final Grid<Hotel> hotelGrid = new Grid<>(Hotel.class);
     private final HotelEditForm editForm = new HotelEditForm(this);
-    private final MainMenu menu = new MainMenu();
-
 
     public HotelsView() {
         LOGGER.info("init method");
@@ -63,19 +60,16 @@ public class HotelsView extends VerticalLayout implements View {
     }
 
     private void initUI() {
-
+        HorizontalLayout controls = new HorizontalLayout(nameFilter, addressFilter, addHotel, deleteHotel, editHotel);
+        HorizontalLayout layout = new HorizontalLayout(hotelGrid, editForm);
+        addComponents(new MainMenu(), controls, layout);
         LOGGER.info("initUI method");
 //        hotelGrid.setSizeFull();
-        controls.addComponents(nameFilter, addressFilter, addHotel, deleteHotel, editHotel);
-        HorizontalLayout layout = new HorizontalLayout(hotelGrid, editForm);
         hotelGrid.setHeightByRows(12);
-        content.addComponents(menu, controls, layout);
         deleteHotel.setEnabled(false);
         editHotel.setEnabled(false);
-        addComponent(content);
         nameFilter.setDescription("Filter by name");
         addressFilter.setDescription("Filter by address");
-        content.setWidth(100, Unit.PERCENTAGE);
         layout.setWidth(100, Unit.PERCENTAGE);
         hotelGrid.setWidth(100, Unit.PERCENTAGE);
         nameFilter.setPlaceholder("Filter by name");

@@ -32,7 +32,6 @@ public class CategoryEditForm extends FormLayout {
     }
 
     private void initUI() {
-        //todo Ко всем полям на форме добавить ToolTip с описанием значения поля.
         HorizontalLayout controls = new HorizontalLayout(save, close);
         addComponents(name, controls);
     }
